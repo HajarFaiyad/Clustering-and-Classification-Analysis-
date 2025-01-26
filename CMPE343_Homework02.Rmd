@@ -1,0 +1,108 @@
+---
+title: "Assignment 02"
+author: "Hajar Faiyad 119200096"
+date: "2023-06-04"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Chosen dataset description and source
+
+The Iris Dataset, is popular for clustering and classification analysis. It is classically used in the machine learning field where clustering and classification tasks are considered. 
+
+For this project, I used the built-in "iris" dataset. This dataset contains measurements of four variables/features for three different iris flower species: Setosa, Virginica, and Versicolor. In more detail, the four features are sepal length and width and petal length and width, in centimeters. Moreover, the dataset contains 150 samples in total, 50 for each species. My purpose is to classify the iris flower into their respective species using clustering based on the previously mentioned four features. 
+
+```{r}
+# loading the iris data and printing the summary
+data(iris)
+summary(iris)
+```
+As for the source, as stated in the "help(iris)", the data were collected by Anderson, Edgar (1935). The irises of the Gaspe Peninsula, Bulletin of the American Iris Society, 59, 2–5. Fisher, R. A. (1936) The use of multiple measurements in taxonomic problems. Annals of Eugenics, 7, Part II, 179–188. .
+
+
+Displaying a sample of the data. As could be understood from the below sample, each row represents an observation (aka sample) and each column represents a feature. This dataset also dialysis the target variable, which is the flower's species.  
+
+```{r iris}
+head(iris)
+```
+
+Plotting the data.
+
+```{r}
+plot(iris, main="The Iris dataset")
+```
+
+## Analysisng the data.
+
+Displaying the hierarchical clustering represented by the Cluster Dendrogram.
+Although it is not really visible in our case, I chose to display the labels; I believe they are of importance. 
+
+```{r}
+plot(hclust(dist(iris[ , 1:4], method = "euclidean")))
+
+plot(hclust(dist(iris[ , 1:4], method = "manhattan")))
+```
+
+After comparing these two hierarchical clustering techniques, I chose to cluster the data using the Manhattan method as my reference; because it displays a more certain or clear dissimilarity between the clusters.
+
+From the Manhattan hierarchical clustering, I noticed that 3 clusters should be used to cluster the data in a more efficient manner. The cluster number benchmark is around 4 for the Manhattan method. For more comparison, the benchmark is around 2 for the euclidean method.
+
+To analyse the data, I used the K-means algorithm to form the clusters. 
+
+```{r}
+set.seed(123)
+
+# I perform k-means clustering on the first 4 columns, which are the feature columns.
+iris_kmeans <- kmeans(iris[ , 1:4], centers = 3)
+
+# Printing the assignments of clusters
+print(iris_kmeans$cluster)
+
+```
+Plotting the clusters for visualization purposes.
+```{r}
+plot(iris_kmeans$cluster)
+```
+
+
+Visualizing the clusters in a clearer way. 
+```{r}
+library(cluster)
+clusplot(iris[ , 1:4], iris_kmeans$cluster, color = TRUE, shade = FALSE,labels = 1, lines = 0)
+```
+
+##  Quality measures (elbow graph)
+
+To find the best number of clusters, I used the elbow graph.
+
+```{r}
+library('factoextra')
+```
+```{r}
+# if not already done, install the factoextra package.
+require("factoextra")
+fviz_nbclust(iris, hcut, method = "silhouette", print.summary = T)
+```
+```{r}
+
+fviz_nbclust(iris, hcut, method = "wss", print.summary = T)
+```
+
+As analysed from the above graphs, the best cluster number is either 2 or 3. 
+
+## Interpretting the results
+
+```{r}
+fviz_dist(dist(iris[, 1:4])) 
+fviz_dist(dist(iris[, 1:4], method = "manhattan")) 
+```
+
+
+As seen when compared both the manhattan method and the euclidean method, the manhattan seems to have more  tight and clear difference between the clusters than the euclidean method where the 3D visualization is more smooth and unclear. Furthermore, the 2nd and the third clusters seem to be somewhat close to each other with a low(small) distance between them. 
+
+In conclusion, I used Solid/Hard clustering approach to analyse the iris dataset. After analyzing the Dendrograms, I decided to use 3 clusters and the k-means method for clustering the data.
